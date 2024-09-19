@@ -1,4 +1,5 @@
 import { SlashCommandBuilder } from 'discord.js';
+import ms from 'ms'; // Importa a biblioteca para facilitar a manipulação de tempo
 
 export const data = new SlashCommandBuilder()
     .setName('adv_change')
@@ -36,9 +37,7 @@ export const data = new SlashCommandBuilder()
                     .setDescription('Qual o motivo para remover a advertência deste jogador?')
                     .setRequired(true)
             )
-    )
-
-    .setContexts(0);
+    );
 
 export async function execute(interaction, userAccount, userDB, infoGameDB, client) {
     await interaction.deferReply();
@@ -60,6 +59,7 @@ export async function execute(interaction, userAccount, userDB, infoGameDB, clie
             return await interaction.editReply({ content: `**${target}** já tem o máximo de avisos.`, ephemeral: true });
         }
 
+        // Incrementa o número de advertências
         await userDB.updateOne({ "id_dc": target.id }, {
             $inc: {
                 "warns": 1
@@ -68,6 +68,39 @@ export async function execute(interaction, userAccount, userDB, infoGameDB, clie
 
         targetAccount = await userDB.findOne({ "id_dc": target.id });
 
+        // Verifica se o jogador atingiu 3 advertências
+        if (targetAccount.warns === 3) {
+            // Define a duração do banimento em milissegundos (14 dias)
+            const banDuration = 14 * 24 * 60 * 60 * 1000; // 14 dias em milissegundos
+            const unbanDate = new Date(Date.now() + banDuration); // Calcula a data de desbanimento
+
+            // Envia mensagem antes do banimento
+            await client.users.send(targetAccount.id_dc, {
+                content: `Você foi banido por 14 dias devido ao acúmulo de 3 advertências.\nMotivo da última advertência: ${reason}.\nPor favor, entre em contato com a equipe se tiver dúvidas.`
+            });
+
+            // Atualiza o documento do jogador com o estado de banido e a data de desbanimento
+            await userDB.updateOne({ "id_dc": target.id }, {
+                $set: {
+                    "state": "Banido por 14 dias por atingir 3 advertências.",
+                    "unbanDate": unbanDate
+                }
+            });
+
+            // Banir o jogador
+            const guild = client.guilds.cache.get(interaction.guildId);
+            const member = guild.members.cache.get(target.id);
+            await member.ban({ reason: `Acúmulo de 3 advertências. Banido por 14 dias.` });
+
+            await interaction.editReply({ content: `Jogador **${target}** foi banido por 14 dias devido ao acúmulo de 3 advertências.` });
+
+            const channel = client.channels.cache.get('1166513977862393967');
+            await channel.send({ content: `**Banimento Automático de 14 dias**\n\n**STAFF:** <@${userAccount.id_dc}>\n**Jogador:** ${target}\n**Razão:** Acúmulo de 3 advertências.` });
+
+            return;
+        }
+
+        // Caso não tenha atingido 3 advertências
         await interaction.editReply({ content: `Advertência ao jogador **${target}** bem sucedida. Agora ele possui **${targetAccount.warns}/3** advertências.` });
 
         const channel = client.channels.cache.get('1166513977862393967');
