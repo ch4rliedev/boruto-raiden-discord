@@ -1,5 +1,4 @@
 import { SlashCommandBuilder } from 'discord.js';
-import ms from 'ms'; // Importa a biblioteca para facilitar a manipulação de tempo
 
 export const data = new SlashCommandBuilder()
     .setName('adv_change')
