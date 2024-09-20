@@ -198,10 +198,10 @@ export async function execute(interaction, userAccount, userDB, infoGameDB, clie
     }
 
     const organizerReward = {
-        easy: { pl: 10, ryous: 500, exp: 400 },
-        medium: { pl: 15, ryous: 750, exp: 550 },
-        hard: { pl: 20, ryous: 1000, exp: 700 },
-        ultimate: { pl: 25, ryous: 1250, exp: 850 },
+        easy: { pl: 15, ryous: 750, exp: 600 },
+        medium: { pl: 20, ryous: 1000, exp: 750 },
+        hard: { pl: 25, ryous: 1250, exp: 900 },
+        ultimate: { pl: 30, ryous: 1500, exp: 1050 },
         offline: { pl: 7, ryous: 350, exp: 350 }
     };
 
