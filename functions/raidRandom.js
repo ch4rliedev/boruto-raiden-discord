@@ -3,9 +3,9 @@ import { randomInt } from "crypto";
 
 export async function raidRandom(doc, type) {
     if (doc.ficha1.level < 10 && !type) return false
-    if (doc.ficha1.blockRaid) return false
-    const raidPassRandom = type === "drawPrize" ? randomInt(1, 101) : randomInt(1, 251);
-    const raidPassNumbers = [14];
+    if (doc.ficha1.blockRaid && (type !== "drawPrize" && type !== "eventReward")) return false
+    const raidPassRandom = type === "drawPrize" ? randomInt(1, 101) : type === "eventReward" ? randomInt(1, 11) : randomInt(1, 251);
+    const raidPassNumbers = type === "eventReward" ? [7] : [14];
 
     doc.vip === 3 ? raidPassNumbers.push(41, 94) : null
     doc.vip === 2 ? raidPassNumbers.push(33) : null

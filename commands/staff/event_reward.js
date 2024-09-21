@@ -269,6 +269,11 @@ export async function execute(interaction, userAccount, userDB, infoGameDB, clie
             }
 
             const reward = rewardData.offline[place];
+            let rewardRaid;
+            if (place === "gold") {
+                const docWinnerGold = await userDB.findOne({ "id_dc": winner.id });
+                rewardRaid = await raidRandom(docWinnerGold, "eventReward")
+            }
             const updates = {
                 $inc: {
                     "ficha1.atb.pontosLivres": reward.pl,
@@ -280,7 +285,7 @@ export async function execute(interaction, userAccount, userDB, infoGameDB, clie
             await winner.send(`## Você recebeu as seguintes recompensas pelo pódio ${place === 'gold' ? '🥇' : place === 'silver' ? '🥈' : '🥉'} no último evento:
             - **${reward.pl} pontos de atributos**
             - **${reward.ryous} ryou**
-            - **${reward.exp} EXP**`);
+            - **${reward.exp} EXP**${rewardRaid ? `\n\n- **${rewardRaid}**` : 'Você não ganhou Passe de Raid desta vez. 😢'}`);
 
             await updateLevel(targetAccount, reward.exp);
         }

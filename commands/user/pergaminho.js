@@ -134,31 +134,31 @@ export async function execute(interaction, userAccount, userDB, infoGameDB, clie
 
     const tnJutsu = {
         "Fuinjutsu": {
-            "letter": "f",
+            "letter": "fuinjutsu",
             "B": 1,
             "A": 2,
             "S": 3
         },
         "Bukijutsu": {
-            "letter": "b",
+            "letter": "bukijutsu",
             "B": 1,
             "A": 2,
             "S": 3
         },
         "Kugutsujutsu": {
-            "letter": "k",
+            "letter": "kugutsujutsu",
             "B": 1,
             "A": 2,
             "S": 3
         },
         "Taijutsu": {
-            "letter": "t",
+            "letter": "taijutsu",
             "B": 1,
             "A": 2,
             "S": 3
         },
         "Genjutsu": {
-            "letter": "g",
+            "letter": "genjutsu",
             "B": 1,
             "A": 2,
             "S": 3
@@ -171,7 +171,7 @@ export async function execute(interaction, userAccount, userDB, infoGameDB, clie
         for (const tipo of typeJutsus) {
             const letter = tnJutsu[tipo].letter;
             const rank = tnJutsu[tipo][jutsu.rank];
-            if (userAccount.ficha1.talentos[letter]?.n < rank || userAccount.ficha1.talentos[letter] !== true) {
+            if (userAccount.ficha1.talentos[letter]?.n < rank || !userAccount.ficha1.talentos[letter]) {
                 return await interaction.editReply({ content: `A técnica ${jutsu.nome} é um ${tipo} e é necessário o TN (Talento Ninja) de ${tipo} em nível ${rank} (você tem nível ${userAccount.ficha1.talentos[letter]?.n ?? 0}) para iniciar o aprendizado.`});
             }
         }
