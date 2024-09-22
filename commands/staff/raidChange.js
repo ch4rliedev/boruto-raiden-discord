@@ -71,7 +71,7 @@ export const data = new SlashCommandBuilder()
 
     .setContexts(0);
 
-export async function execute(interaction, userAccount, userDB, infoGameDB, client) {
+export async function execute(interaction, userAccount, userDB, infoGameDB, itemDB, client) {
     await interaction.deferReply({ ephemeral: true });
 
     async function updateLevel(doc, xpGained) {
@@ -374,7 +374,7 @@ ${turnOrderString}` });
             "1206835482726502401": "1206835880841580564"
         }
     
-        const guild = client.guilds.cache.get("1164398692283990046");
+        const guild = await client.guilds.cache.get("1164398692283990046");
         const room = interaction.options.getString('room');
         const stateRaid = interaction.options.getString('state_raid');
         const channel = guild.channels.cache.get(room);
