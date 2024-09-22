@@ -34,13 +34,13 @@ export async function execute(interaction, userAccount, userDB, infoGameDB, item
   const slotNumber = interaction.options.getNumber('slot')
   const trade = userAccount.ficha1.trades[`trade${slotNumber}`];
 
-  const targetAccount = await userDB.findOne({ "id_dc": trade.id_dc });
-  if (targetAccount.ficha1.trades.limit === 5) return await interaction.editReply({ content: `O jogador <@${targetAccount}> atingiu o limite mensal de negociações dele, aguardem o próximo dia 1.` });
-
   if (trade.nomeItem === "Vazio") {
     await interaction.editReply({ content: `Não há ofertas registradas para este trade.`});
     return;
   }
+
+  const targetAccount = await userDB.findOne({ "id_dc": trade.id_dc });
+  if (targetAccount.ficha1.trades.limit === 5) return await interaction.editReply({ content: `O jogador <@${targetAccount}> atingiu o limite mensal de negociações dele, aguardem o próximo dia 1.` });
 
   if (choice === "ac") {
     if (trade.custo > userAccount.ficha1.ryou) {
