@@ -70,7 +70,7 @@ export async function execute(interaction, userAccount, userDB, infoGameDB, clie
 
         await interaction.editReply({ content: `O jogador **${target}** está agora bloqueado devido ao evento **${eventReason}**.` });
 
-        await client.users.send(targetAccount.id_dc, { content: `STAFF <@${userAccount.id_dc}> bloqueou você de usar comandos devido ao evento **${eventReason}**. Você está restrito até ser desbloqueado.` });
+        await target.send({ content: `STAFF <@${userAccount.id_dc}> bloqueou você de usar comandos devido ao evento **${eventReason}**. Você está restrito até ser desbloqueado.` });
     }
 
     if (interaction.options.getSubcommand() === 'unblock') {
@@ -98,6 +98,6 @@ export async function execute(interaction, userAccount, userDB, infoGameDB, clie
 
         await interaction.editReply({ content: `O jogador **${target}** foi desbloqueado do seu evento atual.` });
 
-        await client.users.send(targetAccount.id_dc, { content: `STAFF <@${userAccount.id_dc}> desbloqueou você do seu evento atual. Agora você está livre para usar todos os comandos.` });
+        await target.send({ content: `STAFF <@${userAccount.id_dc}> desbloqueou você do seu evento atual. Agora você está livre para usar todos os comandos.` });
     }
 }
