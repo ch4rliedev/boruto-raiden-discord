@@ -1,4 +1,5 @@
 import { SlashCommandBuilder } from 'discord.js';
+import { randomInt } from "crypto";
 
 export const data = new SlashCommandBuilder()
     .setName('event_reward')
@@ -79,8 +80,110 @@ export const data = new SlashCommandBuilder()
 
     .setContexts(0);
 
-export async function execute(interaction, userAccount, userDB, infoGameDB, client) {
+export async function execute(interaction, userAccount, userDB, infoGameDB, itemDB, client) {
     await interaction.deferReply();
+
+    async function raidRandom(doc, type) {
+        if (doc.ficha1.level < 10 && !type) return false
+        if (doc.ficha1.blockRaid && (type !== "drawPrize" && type !== "eventReward")) return false
+        const raidPassRandom = type === "drawPrize" ? randomInt(1, 101) : type === "eventReward" ? randomInt(1, 11) : randomInt(1, 251);
+        const raidPassNumbers = type === "eventReward" ? [7] : [14];
+    
+        doc.vip === 3 ? raidPassNumbers.push(41, 94) : null
+        doc.vip === 2 ? raidPassNumbers.push(33) : null
+    
+        let raidPassResult = `Empty`
+        let bonusPass = false;
+        if (raidPassNumbers.includes(raidPassRandom)) {
+            const raidPassPorcent = randomInt(1, 101);
+            const raidPassNumbers = {
+                "Passe de Raid - Bijuu (Escolha)": [88, 3, 77],
+                "Passe de Raid - Bijuu (Semanal)": [21, 45, 32, 89, 12, 67, 55],
+                "Passe de Raid - Bijuu (Aleatório)": [92, 14, 51, 25, 70, 8, 36, 60, 19, 40],
+                "Passe de Raid - Invocação (Escolha)": [95, 23, 18, 69, 50, 10, 86, 47],
+                "Passe de Raid - Invocação (Semanal)": [49, 33, 83, 15, 57, 31, 6, 78, 22, 61, 7, 91],
+                "Passe de Raid - Invocação (Aleatório)": [72, 24, 28, 29, 48, 56, 62],
+                "Passe de Raid - Jutsu (Escolha)": [9, 16, 27, 42, 96,100],
+                "Passe de Raid - Jutsu (Semanal)": [64 ,68 ,37 ,54 ,1 ,59 ,46 ,35 ,43 ,79 ,73 ,63 ,13],
+                "Passe de Raid - Jutsu (Aleatório)": [30 ,41 ,53 ,65 ,99 ,17 ,34 ,74 ,5],
+                "Passe de Raid - Item Especial (Escolha)": [81 ,82 ,98 ,84 ,85 ,87 ,58],
+                "Passe de Raid - Item Especial (Semanal)": [76 ,38 ,4 ,71 ,93 ,80 ,26 ,90 ,20 ,11 ,94 ,97],
+                "Passe de Raid - Item Especial (Aleatório)": [52 ,75 ,2 ,66 ,44 ,39]               
+            };
+            
+            raidPassResult = Object.keys(raidPassNumbers).find(key => raidPassNumbers[key].includes(raidPassPorcent)) || "Empty";
+        
+            if (raidPassResult !== "Empty") {
+                const typeMapping = {
+                    "Bijuu": "bijuus",
+                    "Invocação": "invs",
+                    "Jutsu": "jutsus",
+                    "Item Especial": "items"
+                };
+                
+                const raidType = raidPassResult.substring( //Jutsu, Invocação, Bijuu ou Item
+                    raidPassResult.lastIndexOf("-") + 1,
+                    raidPassResult.lastIndexOf("(")
+                ).trim();
+    
+                const match = raidPassResult.match(/\((.*?)\)/);
+                const itemType = match ? match[1] : ''; //Semanal, Escolha ou Aleatório
+                
+                let item;
+                if (itemType === "Semanal") {
+                    const weeklyItems = await infoGameDB.findOne({ "name": "raids" });
+                    item = weeklyItems.typeRaid[typeMapping[raidType]];
+                } else if (itemType === "Aleatório") {
+                    const items = await infoGameDB.findOne({ "name": "raidList" });
+                    item = items[typeMapping[raidType]][randomInt(0, items[typeMapping[raidType]].length)];
+                } else if (itemType === "Escolha") item = "Escolha"
+                
+                raidPassResult = `Passe de Raid - ${raidType}: "${item}"`;
+                
+                const inventorySlots = Object.keys(doc.ficha1.inventario)
+                const itemRaid = await itemDB.findOne({ "nome": "Passe de Raid" });
+    
+                for (let i = 1; i <= inventorySlots.length; i++) {
+                    const slot = doc.ficha1.inventario[`slot${i}`];
+                    if (slot.nome === raidPassResult && slot.quantia < itemRaid.maxQuantity) {
+    
+                        bonusPass = true;
+                        await userDB.updateOne(
+                            { "idAccount": doc.idAccount },
+                            { $inc: { 
+                                [`ficha1.inventario.slot${i}.quantia`]: 1,
+                                } 
+                            }
+                        );
+                        if (type === "drawPrize") return `${raidPassResult}`
+                        return `\n\n- Item Raro: ${raidPassResult}\n\nUse Passes de Raids para obter jutsus, invocações, bijus e itens exclusivos por meio de um combate.\nCaso não deseje o item, não é possível vender, envie o comando /usar e selecione o slot do item e a quantia.`
+                    }
+                }
+    
+                if (!bonusPass) {
+                    for (let i = 1; i <= inventorySlots.length; i++) {
+                        const slot = doc.ficha1.inventario[`slot${i}`];
+                        if (slot.nome === "Vazio") {
+                            bonusPass = true;
+                            await userDB.updateOne(
+                                { "idAccount": doc.idAccount },
+                                { $set: { 
+                                    [`ficha1.inventario.slot${i}.nome`]: raidPassResult,
+                                    [`ficha1.inventario.slot${i}.quantia`]: 1,
+                                    } 
+                                }
+                            );
+                            if (type === "drawPrize") return `${raidPassResult}`
+                            return `\n\n- Item Raro: ${raidPassResult}\n\nUse Passes de Raids para obter jutsus, invocações, bijus e itens exclusivos por meio de um combate.\nCaso não deseje o item, não é possível vender, envie o comando /usar e selecione o slot do item e a quantia.`
+                        }
+                    }
+                }
+            }
+        }
+        else {
+            return false
+        }
+    }
 
     if (userAccount.staff < 1) {
         return await interaction.editReply({ content: 'Você não tem permissão para usar esse comando, apenas Ajudante ou superior.' });
@@ -269,10 +372,63 @@ export async function execute(interaction, userAccount, userDB, infoGameDB, clie
             }
 
             const reward = rewardData.offline[place];
-            let rewardRaid;
+            let resultPassRaid;
             if (place === "gold") {
                 const docWinnerGold = await userDB.findOne({ "id_dc": winner.id });
-                rewardRaid = await raidRandom(docWinnerGold, "eventReward")
+                resultPassRaid = await raidRandom(docWinnerGold, "eventReward");
+                if (!resultPassRaid) {
+                    // Buscar o item com ID 122 no banco de dados
+                    const item = await itemDB.findOne({ idItem: 122 });
+                    
+                    if (!item) {
+                        console.error("Item com ID 122 não encontrado no banco de dados.");
+                        return;
+                    }
+            
+                    const inventorySlots = Object.keys(docWinnerGold.ficha1.inventario);
+                    let itemAdded = false;
+            
+                    // Verificar se o item já existe no inventário
+                    for (let i = 1; i <= inventorySlots.length; i++) {
+                        if (docWinnerGold.ficha1.inventario[`slot${i}`].nome === item.nome) {
+                            if (docWinnerGold.ficha1.inventario[`slot${i}`].quantia + 1 > item.maxQuantity) {
+                                resultPassRaid = `Não foi possível ganhar o item ${item.nome} ao inventário de ${winner.username}. Limite de quantidade atingido`
+                                return;
+                            } else {
+                                await userDB.updateOne(
+                                    { "id_dc": winner.id },
+                                    { $inc: { [`ficha1.inventario.slot${i}.quantia`]: 1 } }
+                                );
+                                itemAdded = true;
+                                resultPassRaid = `${item.nome} foi adicionado ao inventário de ${winner.username} como recompensa alternativa por não ganhar o Passe de Raid no sorteio.`;
+                                break;
+                            }
+                        }
+                    }
+            
+                    // Se o item não existe no inventário, adicionar em um slot vazio
+                    if (!itemAdded) {
+                        for (let i = 1; i <= inventorySlots.length; i++) {
+                            if (docWinnerGold.ficha1.inventario[`slot${i}`].nome === "Vazio") {
+                                await userDB.updateOne(
+                                    { "id_dc": winner.id },
+                                    {
+                                        $set: {
+                                            [`ficha1.inventario.slot${i}.nome`]: item.nome,
+                                            [`ficha1.inventario.slot${i}.maxQuantity`]: item.maxQuantity,
+                                            [`ficha1.inventario.slot${i}.isSellable`]: item.isSellable,
+                                            [`ficha1.inventario.slot${i}.isStealable`]: item.isStealable,
+                                            [`ficha1.inventario.slot${i}.quantia`]: 1
+                                        }
+                                    }
+                                );
+                                itemAdded = true;
+                                resultPassRaid = `${item.nome} foi adicionado ao inventário de ${winner.username} como recompensa alternativa por não ganhar o Passe de Raid no sorteio.`;
+                                break;
+                            }
+                        }
+                    }
+                }
             }
             const updates = {
                 $inc: {
@@ -285,7 +441,7 @@ export async function execute(interaction, userAccount, userDB, infoGameDB, clie
             await winner.send(`## Você recebeu as seguintes recompensas pelo pódio ${place === 'gold' ? '🥇' : place === 'silver' ? '🥈' : '🥉'} no último evento:
             - **${reward.pl} pontos de atributos**
             - **${reward.ryous} ryou**
-            - **${reward.exp} EXP**${rewardRaid ? `\n\n- **${rewardRaid}**` : 'Você não ganhou Passe de Raid desta vez. 😢'}`);
+            - **${reward.exp} EXP**\n\n${resultPassRaid}`);
 
             await updateLevel(targetAccount, reward.exp);
         }
