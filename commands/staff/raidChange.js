@@ -223,6 +223,12 @@ export async function execute(interaction, userAccount, userDB, infoGameDB, clie
 
         for (const member of members) {
             if (member) {
+                await userDB.updateOne({ "id_dc": member.id }, { "ficha1.state": "Raid" })
+            }
+        }
+
+        for (const member of members) {
+            if (member) {
                 let memberDB = await userDB.findOne({ "id_dc": member.id });
         
                 // Atualiza o membro mais forte com base em pontosTotais
