@@ -15,10 +15,10 @@ export const data = new SlashCommandBuilder()
 
     .addNumberOption(option =>
       option.setName('slot')
-        .setDescription('Qual slot você quer aceitar/recusar entre 1 e 3?')
+        .setDescription('Qual slot você quer aceitar/recusar entre 1 e 5?')
         .setRequired(true)
         .setMinValue(1)
-        .setMaxValue(3)
+        .setMaxValue(5)
     )
 
     .setContexts(0);
