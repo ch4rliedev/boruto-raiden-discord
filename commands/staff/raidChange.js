@@ -220,10 +220,13 @@ export async function execute(interaction, userAccount, userDB, infoGameDB, item
                 return await interaction.editReply({ content: `O jogador ${member} não foi encontrado no servidor.` });
             }
         }
-
+        
         for (const member of members) {
             if (member) {
-                await userDB.updateOne({ "id_dc": member.id }, { "ficha1.state": "Raid" })
+                await userDB.updateOne(
+                    { "id_dc": member.id },
+                    { $set: { "ficha1.state": "Raid" } }
+                );
             }
         }
 
