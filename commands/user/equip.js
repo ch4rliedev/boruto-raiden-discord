@@ -47,7 +47,7 @@ function updateAttributes(attributes, userAccount, itemEquipType, isDown = false
     return updates;
 }
 
-export async function execute(interaction, userAccount, userDB) {
+export async function execute(interaction, userAccount, userDB, infoGameDB, itemDB, client) {
     await interaction.deferReply({ ephemeral: true });
 
     const slotNumber = interaction.options.getNumber('slot');

@@ -77,7 +77,7 @@ export const data = new SlashCommandBuilder()
 
     .setContexts(0)
 
-export async function execute(interaction, userAccount, userDB, itemDB, infoGameDB) {
+export async function execute(interaction, userAccount, userDB, infoGameDB, itemDB, client) {
     await interaction.deferReply({ ephemeral: true })
     const typeCommand = interaction.options.getSubcommand();
     let targetAccount = interaction.options.getUser('outro_jogador')

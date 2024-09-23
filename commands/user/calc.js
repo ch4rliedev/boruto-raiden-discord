@@ -10,7 +10,7 @@ export const data = new SlashCommandBuilder()
     )
     .setContexts(0)
 
-export async function execute(interaction) {
+export async function execute(interaction, userAccount, userDB, infoGameDB, itemDB, client) {
     const expressao = interaction.options.getString('expressao');
     let resultado;
 

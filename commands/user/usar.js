@@ -22,7 +22,7 @@ export const data = new SlashCommandBuilder()
 
     .setContexts(0);
 
-export async function execute(interaction, userAccount, userDB, jutsuDB, itemDB, infoGameDB) {
+export async function execute(interaction, userAccount, userDB, infoGameDB, itemDB, client) {
     await interaction.deferReply({ ephemeral: true });
 
     const slotNumber = interaction.options.getNumber('slot');

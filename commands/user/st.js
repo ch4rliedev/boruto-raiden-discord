@@ -36,7 +36,7 @@ export const data = new SlashCommandBuilder()
 
     .setContexts(0);
 
-export async function execute(interaction, userAccount, userDB, jutsuDB, itemDB, infoGameDB) {
+export async function execute(interaction, userAccount, userDB, infoGameDB, itemDB, client) {
     await interaction.deferReply();
     const typeDraw = interaction.options.getString('tipo_sorteio') ?? '1'; // Certificar que é string
     const maxValue = interaction.options.getNumber('numero_maior');

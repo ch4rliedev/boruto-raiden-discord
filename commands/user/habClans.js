@@ -12,7 +12,7 @@ export const data = new SlashCommandBuilder()
           .setDescription('Passiva do clã Hebi.')
     )
 
-export async function execute(interaction, userAccount, userDB, jutsuDB, itemDB, infoGameDB) {
+export async function execute(interaction, userAccount, userDB, infoGameDB, itemDB, client) {
     await interaction.deferReply()
 
     const typeHabClan = interaction.options.getSubcommand();

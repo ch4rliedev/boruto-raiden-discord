@@ -46,10 +46,10 @@ export const data = new SlashCommandBuilder()
             )
     );
 
-export async function execute(interaction, useraccount, userDB) {
+export async function execute(interaction, userAccount, userDB, infoGameDB, itemDB, client) {
     await interaction.deferReply({ ephemeral: true });
 
-    if (useraccount.staff < 3) {
+    if (userAccount.staff < 3) {
         return await interaction.editReply({ content: 'Você não tem permissão para usar este comando.' });
     }
 
