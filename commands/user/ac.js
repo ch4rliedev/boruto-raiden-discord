@@ -8,16 +8,21 @@ export const data = new SlashCommandBuilder()
     .addNumberOption(option =>
         option.setName('buff_debuff')
             .setDescription('[OPCIONAL] Qual o total de buffs/debuffs em /ac, se houver?')
-            .setMinValue(-20)
-            .setMaxValue(20)
+            .setMinValue(-30)
+            .setMaxValue(30)
     );
 
 export async function execute(interaction, userAccount, userDB, infoGameDB, itemDB, client) {
     await interaction.deferReply();
 
     let buff_debuff = interaction.options.getNumber('buff_debuff') ?? 0;
-    let numberRandom1 = randomInt(11);
-    let numberRandom2 = randomInt(11);
+    if (userAccount.ficha1.patenteNvl === 1 && buff_debuff > 10) buff_debuff = 10
+    if (userAccount.ficha1.patenteNvl === 2 && buff_debuff > 15) buff_debuff = 15
+    if (userAccount.ficha1.patenteNvl === 3 && buff_debuff > 20) buff_debuff = 20
+    if (userAccount.ficha1.patenteNvl === 4 && buff_debuff > 25) buff_debuff = 25
+    if (userAccount.ficha1.patenteNvl === 5 && buff_debuff > 30) buff_debuff = 30
+    let numberRandom1 = randomInt(16);
+    let numberRandom2 = randomInt(16);
     let numberRandomOld = numberRandom1 + numberRandom2;
 
     let modifiers = [];
@@ -101,7 +106,7 @@ export async function execute(interaction, userAccount, userDB, infoGameDB, item
             { name: 'Informações Gerais', value: `\n
         **🎲 Números Sorteados:** ${numberRandom1} + ${numberRandom2}
         **💪🏻 Buffs/Debuffs:** ${buff_debuff}\n
-        **📊 Resultado Final:** ${numberRandom >= 40 ? "40/40 - **MOVIMENTO ULTIMATE**" : `${numberRandom}/40`}
+        **📊 Resultado Final:** ${numberRandom >= 60 ? "60/60 - **MOVIMENTO ULTIMATE**" : `${numberRandom}/60`}
         ` }
         );
 
