@@ -55,7 +55,7 @@ async function updateNicknamesAndRoles() {
             : `${user.ficha1.name}`;
 
           // Verificar se o apelido já está correto
-          if (member.nickname !== newNickname) {
+          if (member.nickname !== newNickname && member.id !== "395675410765185026") {
             try {
               await member.setNickname(newNickname);
             } catch (error) {
