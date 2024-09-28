@@ -171,8 +171,11 @@ export async function execute(interaction, userAccount, userDB, infoGameDB, item
         for (const tipo of typeJutsus) {
             const letter = tnJutsu[tipo].letter;
             const rank = tnJutsu[tipo][jutsu.rank];
-            if (userAccount.ficha1.talentos[letter]?.n < rank || !userAccount.ficha1.talentos[letter]) {
-                return await interaction.editReply({ content: `A técnica ${jutsu.nome} é um ${tipo} e é necessário o TN (Talento Ninja) de ${tipo} em nível ${rank} (você tem nível ${userAccount.ficha1.talentos[letter]?.n ?? 0}) para iniciar o aprendizado.`});
+            if (!((letter === "taijutsu" && user.ficha1.cla === "Lee") || 
+            (userAccount.ficha1.talentos[letter]?.n >= rank))) {
+            
+            const currentLevel = userAccount.ficha1.talentos[letter]?.n ?? 0;
+                return await interaction.editReply({ content: `A técnica ${jutsu.nome} é um ${tipo} e é necessário o TN (Talento Ninja) de ${tipo} em nível ${rank} (você tem nível ${currentLevel}) para iniciar o aprendizado.`});
             }
         }
     }
