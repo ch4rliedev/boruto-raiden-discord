@@ -49,8 +49,8 @@ export async function raidRandom(doc, type) {
             
             let item;
             if (itemType === "Semanal") {
-                const weeklyItems = await infoGameDB.findOne({ "name": "raids" });
-                item = weeklyItems.typeRaid[typeMapping[raidType]];
+                const weeklyItems = await infoGameDB.findOne({ "name": "raidWeek" });
+                item = weeklyItems[typeMapping[raidType]].slice(0, -1);
             } else if (itemType === "Aleatório") {
                 const items = await infoGameDB.findOne({ "name": "raidList" });
                 item = items[typeMapping[raidType]][randomInt(0, items[typeMapping[raidType]].length)];

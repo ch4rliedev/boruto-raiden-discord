@@ -143,7 +143,7 @@ export async function execute(interaction, userAccount, userDB, infoGameDB, item
                     targetAccount.ficha1.patente = "Chuunin";
                     targetAccount.ficha1.atb.pontosLivres += 50;
                     targetAccount.ficha1.ryou += 5000;
-                    targetAccount.ficha1.atb.ptn = 2;
+                    targetAccount.ficha1.atb.ptn += 2;
                     targetAccount.ficha1.atb.energia += 10;
                     targetAccount.ficha1.atb.energiaTemp += 10;
                     targetAccount.ficha1.atb.hp += 75;
@@ -160,7 +160,7 @@ export async function execute(interaction, userAccount, userDB, infoGameDB, item
                     targetAccount.ficha1.patente = "Jounin";
                     targetAccount.ficha1.atb.pontosLivres += 60;
                     targetAccount.ficha1.ryou += 7000;
-                    targetAccount.ficha1.atb.ptn = 2;
+                    targetAccount.ficha1.atb.ptn += 2;
                     targetAccount.ficha1.atb.energia += 10;
                     targetAccount.ficha1.atb.energiaTemp += 10;
                     targetAccount.ficha1.atb.hp += 75;
@@ -177,7 +177,7 @@ export async function execute(interaction, userAccount, userDB, infoGameDB, item
                     targetAccount.ficha1.patente = "Jounin de Elite";
                     targetAccount.ficha1.atb.pontosLivres += 70;
                     targetAccount.ficha1.ryou += 9000;
-                    targetAccount.ficha1.atb.ptn = 3;
+                    targetAccount.ficha1.atb.ptn += 3;
                     targetAccount.ficha1.atb.energia += 10;
                     targetAccount.ficha1.atb.energiaTemp += 10;
                     targetAccount.ficha1.atb.hp += 75;
@@ -194,7 +194,7 @@ export async function execute(interaction, userAccount, userDB, infoGameDB, item
                     targetAccount.ficha1.patente = "Jounin Hanchou";
                     targetAccount.ficha1.atb.pontosLivres += 80;
                     targetAccount.ficha1.ryou += 10000;
-                    targetAccount.ficha1.atb.ptn = 3;
+                    targetAccount.ficha1.atb.ptn += 3;
                     targetAccount.ficha1.atb.energia += 10;
                     targetAccount.ficha1.atb.energiaTemp += 10;
                     targetAccount.ficha1.atb.hp += 75;
@@ -219,7 +219,7 @@ export async function execute(interaction, userAccount, userDB, infoGameDB, item
                     targetAccount.ficha1.patente = "Nukenin Rank C";
                     targetAccount.ficha1.atb.pontosLivres += 50;
                     targetAccount.ficha1.ryou += 5000;
-                    targetAccount.ficha1.atb.ptn = 2;
+                    targetAccount.ficha1.atb.ptn += 2;
                     targetAccount.ficha1.atb.energia += 10;
                     targetAccount.ficha1.atb.energiaTemp += 10;
                     targetAccount.ficha1.atb.hp += 75;
@@ -236,7 +236,7 @@ export async function execute(interaction, userAccount, userDB, infoGameDB, item
                     targetAccount.ficha1.patente = "Nukenin Rank B";
                     targetAccount.ficha1.atb.pontosLivres += 60;
                     targetAccount.ficha1.ryou += 7000;
-                    targetAccount.ficha1.atb.ptn = 2;
+                    targetAccount.ficha1.atb.ptn += 2;
                     targetAccount.ficha1.atb.energia += 10;
                     targetAccount.ficha1.atb.energiaTemp += 10;
                     targetAccount.ficha1.atb.hp += 75;
@@ -253,7 +253,7 @@ export async function execute(interaction, userAccount, userDB, infoGameDB, item
                     targetAccount.ficha1.patente = "Nukenin Rank A";
                     targetAccount.ficha1.atb.pontosLivres += 70;
                     targetAccount.ficha1.ryou += 9000;
-                    targetAccount.ficha1.atb.ptn = 3;
+                    targetAccount.ficha1.atb.ptn += 3;
                     targetAccount.ficha1.atb.energia += 10;
                     targetAccount.ficha1.atb.energiaTemp += 10;
                     targetAccount.ficha1.atb.hp += 75;
@@ -270,7 +270,7 @@ export async function execute(interaction, userAccount, userDB, infoGameDB, item
                     targetAccount.ficha1.patente = "Nukenin Rank S";
                     targetAccount.ficha1.atb.pontosLivres += 80;
                     targetAccount.ficha1.ryou += 10000;
-                    targetAccount.ficha1.atb.ptn = 3;
+                    targetAccount.ficha1.atb.ptn += 3;
                     targetAccount.ficha1.atb.energia += 10;
                     targetAccount.ficha1.atb.energiaTemp += 10;
                     targetAccount.ficha1.atb.hp += 75;
