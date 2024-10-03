@@ -8,7 +8,7 @@ export const data = new SlashCommandBuilder()
         subcommand.setName('reset_atb')
           .setDescription('Reseta os atributos do seu personagem')
     )
-    .addSubcommand(subcommand =>
+    /*.addSubcommand(subcommand =>
         subcommand.setName('change_village')
           .setDescription('Muda a vila do seu personagem')
           .addStringOption(option =>
@@ -22,7 +22,7 @@ export const data = new SlashCommandBuilder()
                 { name: `Vila Oculta da Névoa`, value: 'Névoa' },
             )
         )
-    )
+    )*/
     .addSubcommand(subcommand =>
       subcommand.setName('change_ninja_name')
           .setDescription('Muda o nome do seu personagem')
