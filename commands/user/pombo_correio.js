@@ -21,7 +21,7 @@ export const data = new SlashCommandBuilder()
             .setRequired(false)
     );
 
-export async function execute(interaction, userAccount, userDB, infoGameDB, itemDB, client) {
+export async function execute(interaction, userAccount, userDB, infoGameDB, itemDB, jutsuDB, invDB, clanDB, client) {
     await interaction.deferReply({ ephemeral: true });
 
     const recipient = interaction.options.getUser('destinatario');

@@ -16,7 +16,7 @@ export const data = new SlashCommandBuilder()
 
     .setContexts(0);
 
-export async function execute(interaction, userAccount, userDB, infoGameDB, itemDB, client) {
+export async function execute(interaction, userAccount, userDB, infoGameDB, itemDB, jutsuDB, invDB, clanDB, client) {
     const typeSpam = interaction.options.getString('tipo_spam')
 
     if (typeSpam === "discord") {

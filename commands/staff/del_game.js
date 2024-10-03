@@ -42,7 +42,7 @@ export const data = new SlashCommandBuilder()
 
     .setContexts(0);
 
-export async function execute(interaction, userAccount, userDB, infoGameDB, itemDB, client) {
+export async function execute(interaction, userAccount, userDB, infoGameDB, itemDB, jutsuDB, invDB, clanDB, client) {
     await interaction.deferReply()
     if (userAccount.staff < 3) return await interaction.editReply({ content: `Você não tem permissão de usar esse comando, apenas Administrador ou superior.` });
     const typeGive = interaction.options.getSubcommand();

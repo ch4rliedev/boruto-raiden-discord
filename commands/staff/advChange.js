@@ -38,7 +38,7 @@ export const data = new SlashCommandBuilder()
             )
     );
 
-export async function execute(interaction, userAccount, userDB, infoGameDB, itemDB, client) {
+export async function execute(interaction, userAccount, userDB, infoGameDB, itemDB, jutsuDB, invDB, clanDB, client) {
     await interaction.deferReply();
 
     if (userAccount.staff < 1) {

@@ -20,7 +20,7 @@ export const data = new SlashCommandBuilder()
     );
 
 // Função para calcular o modificador de talento
-function calculateTalentModifier(interaction, userAccount, userDB, infoGameDB, itemDB, client) {
+function calculateTalentModifier(interaction, userAccount, userDB, infoGameDB, itemDB, jutsuDB, invDB, clanDB, client) {
     let modifier = 0;
 
     // Verificar talentos "Engenheiro" e "Ferreiro"

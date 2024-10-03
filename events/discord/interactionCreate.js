@@ -1,6 +1,6 @@
 import { Events } from 'discord.js';
 import { client } from "../../index.js";
-import { userDB, infoGameDB, itemDB } from '../../mongodb.js'
+import { userDB, infoGameDB, itemDB, jutsuDB, invDB, clanDB } from '../../mongodb.js'
 let userAccount;
 
 export const name = Events.InteractionCreate;
@@ -30,7 +30,7 @@ export async function execute(interaction) {
     }
 
 	try {
-		await command.execute(interaction, userAccount, userDB, infoGameDB, itemDB, interaction.client);
+		await command.execute(interaction, userAccount, userDB, infoGameDB, itemDB, jutsuDB, invDB, clanDB, interaction.client);
 
 		const reply = await interaction.fetchReply();
 		const replyContent = reply.content;

@@ -12,7 +12,7 @@ export const data = new SlashCommandBuilder()
             .setMaxValue(30)
     );
 
-export async function execute(interaction, userAccount, userDB, infoGameDB, itemDB, client) {
+export async function execute(interaction, userAccount, userDB, infoGameDB, itemDB, jutsuDB, invDB, clanDB, client) {
     await interaction.deferReply();
 
     let buff_debuff = interaction.options.getNumber('buff_debuff') ?? 0;

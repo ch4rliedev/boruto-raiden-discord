@@ -47,7 +47,7 @@ function updateAttributes(attributes, userAccount, itemEquipType, isDown = false
     return updates;
 }
 
-export async function execute(interaction, userAccount, userDB, infoGameDB, itemDB, client) {
+export async function execute(interaction, userAccount, userDB, infoGameDB, itemDB, jutsuDB, invDB, clanDB, client) {
     await interaction.deferReply({ ephemeral: true });
 
     const slotNumber = interaction.options.getNumber('slot');

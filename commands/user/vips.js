@@ -35,7 +35,7 @@ export const data = new SlashCommandBuilder()
 
     .setContexts(0);
 
-export async function execute(interaction, userAccount, userDB, infoGameDB, itemDB, client) {
+export async function execute(interaction, userAccount, userDB, infoGameDB, itemDB, jutsuDB, invDB, clanDB, client) {
     await interaction.deferReply({ ephemeral: true })
 
     if (userAccount.ficha1.state !== "Livre") {
@@ -148,22 +148,150 @@ export async function execute(interaction, userAccount, userDB, infoGameDB, item
           return await interaction.editReply({ content: `Você já utilizou este benefício neste personagem.` });
       }
 
-      const novoNome = interaction.options.getString('novo_nome');
+      const newName = interaction.options.getString('novo_nome');
+      const oldName = userAccount.ficha1.name;
 
       // Verifica se já existe outro personagem com o mesmo nome (ignorando maiúsculas/minúsculas)
-      const existingCharacter = await userDB.findOne({ "ficha1.name": { $regex: new RegExp(`^${novoNome}$`, 'i') } });
+      const existingCharacter = await userDB.findOne({ "ficha1.name": { $regex: new RegExp(`^${newName}$`, 'i') } });
       if (existingCharacter) {
-          return await interaction.editReply({ content: `Já existe um personagem com o nome "${novoNome}". Por favor, escolha outro nome.` });
+          return await interaction.editReply({ content: `Já existe um personagem com o nome "${newName}". Por favor, escolha outro nome.` });
       }
 
       // Atualiza o nome do personagem no banco de dados (mantendo a capitalização original)
       await userDB.updateOne({ "id_dc": userAccount.id_dc }, {
           $set: {
-              "ficha1.name": novoNome,
+              "ficha1.name": newName,
               "ficha1.vips.change_ninja_name": true,
           }
       });
 
-      await interaction.editReply({ content: `O nome do seu personagem foi alterado para "${novoNome}" com sucesso!` });
+      async function updateCharacterNameEverywhere(oldName, newName) {
+            // Update userDB
+            await userDB.updateMany(
+                {},
+                {
+                    $set: {
+                        "ficha1.trades.trade1.nomePersonagem": { $cond: [{ $eq: ["$ficha1.trades.trade1.nomePersonagem", oldName] }, newName, "$ficha1.trades.trade1.nomePersonagem"] },
+                        "ficha1.trades.trade2.nomePersonagem": { $cond: [{ $eq: ["$ficha1.trades.trade2.nomePersonagem", oldName] }, newName, "$ficha1.trades.trade2.nomePersonagem"] },
+                        "ficha1.trades.trade3.nomePersonagem": { $cond: [{ $eq: ["$ficha1.trades.trade3.nomePersonagem", oldName] }, newName, "$ficha1.trades.trade3.nomePersonagem"] },
+                        "ficha1.trades.trade4.nomePersonagem": { $cond: [{ $eq: ["$ficha1.trades.trade4.nomePersonagem", oldName] }, newName, "$ficha1.trades.trade4.nomePersonagem"] },
+                        "ficha1.trades.trade5.nomePersonagem": { $cond: [{ $eq: ["$ficha1.trades.trade5.nomePersonagem", oldName] }, newName, "$ficha1.trades.trade5.nomePersonagem"] }
+                    }
+                }
+            );
+
+            // Update itemDB
+            await itemDB.updateMany(
+                { "exclusive": oldName },
+                { $set: { "exclusive": newName } }
+            );
+
+            // Update infoGameDB
+            const examTypes = ['chuuninExam', 'jouninExam', 'jouninEliteExam', 'jouninHanchou'];
+            await infoGameDB.updateOne(
+                { name: "examData" },
+                {
+                    $set: {
+                        ...Object.fromEntries(examTypes.map(type => 
+                            [`${type}.registeredUsersNames`, {
+                                $map: {
+                                    input: `$${type}.registeredUsersNames`,
+                                    as: "name",
+                                    in: { $cond: [{ $eq: ["$$name", oldName] }, newName, "$$name"] }
+                                }
+                            }]
+                        ))
+                    }
+                }
+            );
+
+            // Update ranking documents
+            const rankingDocs = ['Ranking Power Folha', 'Ranking Power global', 'Ranking Ryou Folha', 'Ranking Ryou global'];
+            for (const docName of rankingDocs) {
+                await infoGameDB.updateOne(
+                    { name: docName },
+                    {
+                        $set: {
+                            "ranking": {
+                                $map: {
+                                    input: { $objectToArray: "$ranking" },
+                                    as: "ninja",
+                                    in: {
+                                        k: "$$ninja.k",
+                                        v: {
+                                            $mergeObjects: [
+                                                "$$ninja.v",
+                                                { name: { $cond: [{ $eq: ["$$ninja.v.name", oldName] }, newName, "$$ninja.v.name"] } }
+                                            ]
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                );
+            }
+
+            // Update drawDaily document
+            await infoGameDB.updateOne(
+                { name: "drawDaily" },
+                {
+                    $set: {
+                        "dailyDraws": {
+                            $map: {
+                                input: { $objectToArray: "$dailyDraws" },
+                                as: "draw",
+                                in: {
+                                    k: "$$draw.k",
+                                    v: {
+                                        $mergeObjects: [
+                                            "$$draw.v",
+                                            { 
+                                                winner: { 
+                                                    $cond: [
+                                                        { $eq: ["$$draw.v.winner", oldName] },
+                                                        newName,
+                                                        "$$draw.v.winner"
+                                                    ]
+                                                }
+                                            }
+                                        ]
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            );
+
+            // Update pomboCorreio document
+            await infoGameDB.updateOne(
+                { name: "pomboCorreio" },
+                {
+                    $set: {
+                        "messages": {
+                            $map: {
+                                input: "$messages",
+                                as: "message",
+                                in: {
+                                    $mergeObjects: [
+                                        "$$message",
+                                        { 
+                                            sender: { $cond: [{ $eq: ["$$message.sender", oldName] }, newName, "$$message.sender"] },
+                                            recipient: { $cond: [{ $eq: ["$$message.recipient", oldName] }, newName, "$$message.recipient"] }
+                                        }
+                                    ]
+                                }
+                            }
+                        }
+                    }
+                }
+            );
+      }
+
+      // Chama a função para atualizar o nome em todas as coleções
+      await updateCharacterNameEverywhere(oldName, newName);
+
+      await interaction.editReply({ content: `O nome do seu personagem foi alterado para "${newName}" com sucesso!` });
     }
 }
