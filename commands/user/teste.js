@@ -50,13 +50,12 @@ export async function execute(interaction) {
 
         result = randomInt(1, maxRange + 1);  // Sorteia de 1 até o novo maxRange ajustado
 
-        description = `**🎯 Teste de Procura:** Sorteado ${result}/6 com buff/debuff ${buff_debuff}\n`;
-
         if (result === fixedNumber) {
-            description += '**Resultado:** **SUCESSO!** Encontrou a localização.\n';
+            description += `**Resultado:** SUCESSO! Encontrou a localização.\nBuff/Debuff: ${buff_debuff}`;
         } else {
-            description += '**Resultado:** **FRACASSO!** Não encontrou a localização.\n';
+            description += `**Resultado:** FRACASSO! Não encontrou a localização.\nBuff/Debuff: ${buff_debuff}`;
         }
+
     } else if (subcommand === 'clone') {
         // Teste de clone
         const totalClones = interaction.options.getNumber('quantidade');  // Clones + 1 (inimigo)
@@ -66,12 +65,10 @@ export async function execute(interaction) {
 
         result = randomInt(1, maxRange + 1);  // Sorteia o número do teste entre 1 e maxRange ajustado
 
-        description = `**🎯 Teste de Clones:** Sorteado ${result}/${totalClones} com buff/debuff ${buff_debuff}\n`;
-
         if (result === fixedNumber) {
-            description += '**Resultado:** **SUCESSO!** Encontrou o verdadeiro clone.\n';
+            description += `**Resultado:** SUCESSO! Encontrou o verdadeiro clone.\nBuff/Debuff: ${buff_debuff}`;
         } else {
-            description += `**Resultado:** **FRACASSO!** O verdadeiro clone estava no ${fixedNumber}.\n`;
+            description += `**Resultado:** **FRACASSO!** Não encontrou o verdadeiro clone.\nBuff/Debuff: ${buff_debuff}`;
         }
     }
 

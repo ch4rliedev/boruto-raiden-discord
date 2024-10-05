@@ -31,6 +31,8 @@ export async function execute(interaction, userAccount, userDB, infoGameDB, item
     let targetAccount = await userDB.findOne({ "id_dc": target.id });
     if (!targetAccount || !targetAccount.ficha1.active) return await interaction.editReply({ content: `*${target}* não é um alvo válido ou ele não possuí uma conta/personagem.`, ephemeral: true});
 
+    const clanInfo = await clanDB.findOne({ "nome": targetAccount.ficha1.cla });
+
     async function updateLevel(doc, xpGained) {
         let currentLevel = doc.ficha1.level;
         let currentXP = doc.ficha1.xpCurrent + xpGained;
@@ -148,6 +150,7 @@ export async function execute(interaction, userAccount, userDB, infoGameDB, item
                     targetAccount.ficha1.atb.energiaTemp += 10;
                     targetAccount.ficha1.atb.hp += 75;
                     targetAccount.ficha1.atb.hpTemp += 75;
+                    targetAccount.ficha1.talentos[clanInfo.ninjaTalent].n += 1;
                     patenteRoleID = '1164694669918212096';
                     patenteRoleIDOld = '1164694771860783145';
                     await updateLevel(targetAccount, 3000);
@@ -165,6 +168,7 @@ export async function execute(interaction, userAccount, userDB, infoGameDB, item
                     targetAccount.ficha1.atb.energiaTemp += 10;
                     targetAccount.ficha1.atb.hp += 75;
                     targetAccount.ficha1.atb.hpTemp += 75;
+                    targetAccount.ficha1.talentos[clanInfo.ninjaTalent].n += 1;
                     patenteRoleID = '1164694582555062324';
                     patenteRoleIDOld = '1164694669918212096';
                     await updateLevel(targetAccount, 6000);
@@ -182,6 +186,7 @@ export async function execute(interaction, userAccount, userDB, infoGameDB, item
                     targetAccount.ficha1.atb.energiaTemp += 10;
                     targetAccount.ficha1.atb.hp += 75;
                     targetAccount.ficha1.atb.hpTemp += 75;
+                    targetAccount.ficha1.talentos[clanInfo.ninjaTalent].n += 1;
                     patenteRoleID = '1164694506948546591';
                     patenteRoleIDOld = '1164694582555062324';
                     await updateLevel(targetAccount, 10000);
@@ -199,6 +204,7 @@ export async function execute(interaction, userAccount, userDB, infoGameDB, item
                     targetAccount.ficha1.atb.energiaTemp += 10;
                     targetAccount.ficha1.atb.hp += 75;
                     targetAccount.ficha1.atb.hpTemp += 75;
+                    targetAccount.ficha1.talentos[clanInfo.ninjaTalent].n += 1;
                     patenteRoleID = '1164694297086541845';
                     patenteRoleIDOld = '1164694506948546591';
                     await updateLevel(targetAccount, 20000);
@@ -224,6 +230,7 @@ export async function execute(interaction, userAccount, userDB, infoGameDB, item
                     targetAccount.ficha1.atb.energiaTemp += 10;
                     targetAccount.ficha1.atb.hp += 75;
                     targetAccount.ficha1.atb.hpTemp += 75;
+                    targetAccount.ficha1.talentos[clanInfo.ninjaTalent].n += 1;
                     patenteRoleID = '1164694669918212096';
                     patenteRoleIDOld = '1164694771860783145';
                     await updateLevel(targetAccount, 3000);
@@ -241,6 +248,7 @@ export async function execute(interaction, userAccount, userDB, infoGameDB, item
                     targetAccount.ficha1.atb.energiaTemp += 10;
                     targetAccount.ficha1.atb.hp += 75;
                     targetAccount.ficha1.atb.hpTemp += 75;
+                    targetAccount.ficha1.talentos[clanInfo.ninjaTalent].n += 1;
                     patenteRoleID = '1164694582555062324';
                     patenteRoleIDOld = '1164694669918212096';
                     await updateLevel(targetAccount, 6000);
@@ -258,6 +266,7 @@ export async function execute(interaction, userAccount, userDB, infoGameDB, item
                     targetAccount.ficha1.atb.energiaTemp += 10;
                     targetAccount.ficha1.atb.hp += 75;
                     targetAccount.ficha1.atb.hpTemp += 75;
+                    targetAccount.ficha1.talentos[clanInfo.ninjaTalent].n += 1;
                     patenteRoleID = '1164694506948546591';
                     patenteRoleIDOld = '1164694582555062324';
                     await updateLevel(targetAccount, 10000);
@@ -275,6 +284,7 @@ export async function execute(interaction, userAccount, userDB, infoGameDB, item
                     targetAccount.ficha1.atb.energiaTemp += 10;
                     targetAccount.ficha1.atb.hp += 75;
                     targetAccount.ficha1.atb.hpTemp += 75;
+                    targetAccount.ficha1.talentos[clanInfo.ninjaTalent].n += 1;
                     patenteRoleID = '1164694297086541845';
                     patenteRoleIDOld = '1164694506948546591';
                     await updateLevel(targetAccount, 20000);
@@ -334,6 +344,57 @@ export async function execute(interaction, userAccount, userDB, infoGameDB, item
                 );
             }
             message += `\n**Novo elemento:** ${novoElemento}`;
+        }
+
+        if (targetAccount.ficha1.cla === "Gelel" || targetAccount.ficha1.cla === "Sennin" || targetAccount.ficha1.cla === "Senju" || targetAccount.ficha1.cla === "Konan") {
+            if (targetAccount.ficha1.patenteNvl === 2) {
+                await userDB.updateOne(
+                    { "id_dc": target.id },
+                    { $inc: { "ficha1.atb.ck": 50, "ficha1.atb.ckTemp": 50} }
+                );
+            }
+            if (targetAccount.ficha1.patenteNvl === 3) {
+                await userDB.updateOne(
+                    { "id_dc": target.id },
+                    { $inc: { "ficha1.atb.ck": 50, "ficha1.atb.ckTemp": 50 } }
+                );
+            }
+            if (targetAccount.ficha1.patenteNvl === 4) {
+                await userDB.updateOne(
+                    { "id_dc": target.id },
+                    { $inc: { "ficha1.atb.ck": 50, "ficha1.atb.ckTemp": 50 } }
+                );
+            }
+        }
+
+        if (targetAccount.ficha1.cla === "Akimichi") {
+            if (targetAccount.ficha1.patenteNvl === 2) {
+                await userDB.updateOne(
+                    { "id_dc": target.id },
+                    { $inc: { "ficha1.atb.hp": 20, "ficha1.atb.hpTemp": 20 } }
+                );
+            }
+            if (targetAccount.ficha1.patenteNvl === 3) {
+                await userDB.updateOne(
+                    { "id_dc": target.id },
+                    { $inc: { "ficha1.atb.hp": 30, "ficha1.atb.hpTemp": 30 } }
+                );
+            }
+            if (targetAccount.ficha1.patenteNvl === 4) {
+                await userDB.updateOne(
+                    { "id_dc": target.id },
+                    { $inc: { "ficha1.atb.hp": 40, "ficha1.atb.hpTemp": 40 } }
+                );
+            }
+        }
+
+        if (targetAccount.ficha1.cla === "Karatachi") {
+            if (targetAccount.ficha1.patenteNvl === 2) {
+                await userDB.updateOne(
+                    { "id_dc": target.id },
+                    { $inc: { "ficha1.atb.hp": 20, "ficha1.atb.hpTemp": 20 } }
+                );
+            }
         }
 
         await interaction.editReply({ content: `O personagem **${targetAccount.ficha1.name}** foi evoluído com sucesso.\n**Patente nova:** ${targetAccount.ficha1.patente}` });

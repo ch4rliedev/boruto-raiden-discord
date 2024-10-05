@@ -98,6 +98,9 @@ export async function execute(interaction, userAccount, userDB, infoGameDB, item
       if (userAccount?.ficha1?.vips?.change_village) {
           return await interaction.editReply({ content: `Você já utilizou este benefício neste personagem.` });
       }
+      if (userAccount.ficha1.senior || userAccount.ficha1.kage) {
+          return await interaction.editReply({ content: `Você não pode mudar de vila enquanto for o Kage ou Sênior da sua vila.` });
+      }
 
       let villagesCountDoc = await infoGameDB.findOne({ name: "villagesCount" });
 
