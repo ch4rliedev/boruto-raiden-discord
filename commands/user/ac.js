@@ -45,54 +45,6 @@ export async function execute(interaction, userAccount, userDB, infoGameDB, item
         modifiers.push("⚠️ Resultado aumentado em 4 devido ao clã Kaminarimon.");
     }
 
-    /*
-    if (userAccount.ficha1.talentos.mag) {
-        numberRandomOld += userAccount.ficha1.talentos.mag.n;
-        modifiers.push(`⚠️ Resultado aumentado em ${userAccount.ficha1.talentos.mag.n} devido ao talento ninja Mestre da Agilidade.`);
-    }
-
-    const equipmentModifiers = {
-        helmet: { name: userAccount.ficha1.equip.helmet , value: userAccount.ficha1.equip.helmetac },
-        boots: { name: userAccount.ficha1.equip.boots , value: userAccount.ficha1.equip.bootsac },
-        breastplate: { name: userAccount.ficha1.equip.breastplate, value: userAccount.ficha1.equip.breastplateac },
-        pants: { name: userAccount.ficha1.equip.pants, value: userAccount.ficha1.equip.pantsac },
-        ring: { name: userAccount.ficha1.equip.ring, value: userAccount.ficha1.equip.ringac },
-        cord: { name: userAccount.ficha1.equip.cord, value: userAccount.ficha1.equip.cordac },
-      };
-    
-    // Verificar se o usuário tem o talento plus_buff e aplicar o bônus
-    const plusBuffTalent = userAccount.ficha1.talentos.plus_buff;
-    if (plusBuffTalent && plusBuffTalent.n > 0) {
-        const bonusPercentage = [0, 10, 15, 20, 30][plusBuffTalent.n]; // Mapear o nível do talento à porcentagem de bônus
-
-        for (const [key, { name, value }] of Object.entries(equipmentModifiers)) {
-            if (value !== 0 && value > 0) { // Aplicar o bônus apenas a buffs positivos
-                const bonusValue = Math.ceil(value * (bonusPercentage / 100)); // Calcular o bônus e arredondar para cima
-                numberRandomOld += value + bonusValue;
-                modifiers.push(`⚠️ Resultado aumentado em ${value} (base) + ${bonusValue} (bônus de ${bonusPercentage}% do **Aprimoramento de Buff ${plusBuffTalent === 4 ? "IV" : plusBuffTalent === 3 ? "III" : plusBuffTalent === 2 ? "II" : "I"}**) devido ao(a) ${name}.`);
-            }
-            else if (value !== 0) { 
-                numberRandomOld += value;
-                modifiers.push(`⚠️ Resultado diminuído em ${Math.abs(value)} devido ao(a) ${name}.`);
-            }
-        }
-    }
-    else {
-        // Se o talento não existir ou tiver nível 0, aplicar a lógica original
-        for (const [key, { name, value }] of Object.entries(equipmentModifiers)) {
-            if (value !== 0) {
-                if (value > 0) {
-                    numberRandomOld += value;
-                    modifiers.push(`⚠️ Resultado aumentado em ${value} devido ao(a) ${name}.`);
-                } else {
-                    numberRandomOld += value;
-                    modifiers.push(`⚠️ Resultado diminuído em ${Math.abs(value)} devido ao(a) ${name}.`);
-                }
-            }
-        }
-    }
-    */
-
     numberRandomOld += buff_debuff;
 
     let numberRandom = numberRandomOld;

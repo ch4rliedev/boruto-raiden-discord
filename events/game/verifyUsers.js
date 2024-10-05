@@ -27,11 +27,23 @@ const patenteRoles = {
   5: "1164694297086541845"
 };
 
+// Adicione aqui os IDs dos cargos para cada país
+const countryRoles = {
+  "País da Água": "1292190335052677212",
+  "País do Relâmpago": "1292190366392389705",
+  "País do Fogo": "1292190300294483999",
+  "País do Vento": "1292190532084301958",
+  "País da Terra": "1292190449330552863",
+  "País dos Rios": "1292190563734519919",
+  "País do Som": "1292191782007738499"
+};
+
 const allManagedRoles = new Set([
   shinobiRole,
   nukeninRole,
   ...Object.values(patenteRoles),
-  ...Object.values(vipRoles)
+  ...Object.values(vipRoles),
+  ...Object.values(countryRoles)
 ]);
 
 async function updateNicknamesAndRoles() {
@@ -69,20 +81,18 @@ async function updateNicknamesAndRoles() {
           const vipRole = vipRoles[user.vip];
           if (vipRole) {
             if (!member.roles.cache.has(vipRole)) {
-              rolesToAdd.add(vipRole); // Adiciona cargo VIP se o usuário não tiver
+              rolesToAdd.add(vipRole);
             }
             
-            // Verifica todos os outros cargos VIP e remove se for diferente do atual
             Object.values(vipRoles).forEach(role => {
               if (role !== vipRole && member.roles.cache.has(role)) {
-                rolesToRemove.add(role); // Adiciona à lista de remoção se houver outro cargo VIP
+                rolesToRemove.add(role);
               }
             });
           } else {
-            // Se user.vip for undefined ou não mapeado, remove qualquer cargo VIP existente
             Object.values(vipRoles).forEach(role => {
               if (member.roles.cache.has(role)) {
-                rolesToRemove.add(role); // Remove todos os cargos VIP se não houver user.vip
+                rolesToRemove.add(role);
               }
             });
           }
@@ -91,27 +101,45 @@ async function updateNicknamesAndRoles() {
           const patenteRole = patenteRoles[user.ficha1.patenteNvl];
           const vilaRole = vilaRoles[user.ficha1.vila];
 
-          // Verifica se o membro já tem o cargo correto de patente, se não, adiciona
           if (patenteRole && !member.roles.cache.has(patenteRole)) {
             rolesToAdd.add(patenteRole);
           }
 
-          // Verifica se o membro já tem o cargo correto de vila, se não, adiciona
           if (vilaRole && !member.roles.cache.has(vilaRole)) {
             rolesToAdd.add(vilaRole);
           }
 
           // Definir cargos de Shinobi/Nukenin conforme a patente
-          if (user.ficha1.patenteType === 0) { // Shinobi
+          if (user.ficha1.patenteType === 0) {
             if (!member.roles.cache.has(shinobiRole)) {
               rolesToAdd.add(shinobiRole);
             }
             rolesToRemove.add(nukeninRole);
-          } else { // Nukenin
+          } else {
             if (!member.roles.cache.has(nukeninRole)) {
               rolesToAdd.add(nukeninRole);
             }
             rolesToRemove.add(shinobiRole);
+          }
+
+          // Verificar e atualizar o cargo do país
+          const countryRole = countryRoles[user.ficha1.localCountry];
+          if (countryRole) {
+            if (!member.roles.cache.has(countryRole)) {
+              rolesToAdd.add(countryRole);
+            }
+            
+            Object.values(countryRoles).forEach(role => {
+              if (role !== countryRole && member.roles.cache.has(role)) {
+                rolesToRemove.add(role);
+              }
+            });
+          } else {
+            Object.values(countryRoles).forEach(role => {
+              if (member.roles.cache.has(role)) {
+                rolesToRemove.add(role);
+              }
+            });
           }
         } else {
           // Remover cargos se a ficha1 não estiver ativa
@@ -120,6 +148,7 @@ async function updateNicknamesAndRoles() {
           Object.values(patenteRoles).forEach(role => rolesToRemove.add(role));
           Object.values(vilaRoles).forEach(role => rolesToRemove.add(role));
           Object.values(vipRoles).forEach(role => rolesToRemove.add(role));
+          Object.values(countryRoles).forEach(role => rolesToRemove.add(role));
         }
 
         // Filtrar roles a remover que o usuário realmente possui
