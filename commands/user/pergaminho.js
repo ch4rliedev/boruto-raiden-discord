@@ -103,7 +103,7 @@ export async function execute(interaction, userAccount, userDB, infoGameDB, item
     if (modosValidos.length > 0) {
         for (let i = 0; i < modosValidos.length; i++) {
             let modo = modos[modosValidos[i]];
-            if (user.ficha1.modos[modo.campo] <= modo.nivel) {
+            if (userAccount.ficha1.modos[modo.campo] <= modo.nivel) {
                 return await interaction.editReply({ content: `A técnica ${jutsu.nome} requer o ${modo.mensagem} aprendido.`});
             }
         }
@@ -171,7 +171,7 @@ export async function execute(interaction, userAccount, userDB, infoGameDB, item
         for (const tipo of typeJutsus) {
             const letter = tnJutsu[tipo].letter;
             const rank = tnJutsu[tipo][jutsu.rank];
-            if (!((letter === "taijutsu" && user.ficha1.cla === "Lee") || 
+            if (!((letter === "taijutsu" && userAccount.ficha1.cla === "Lee") || 
             (userAccount.ficha1.talentos[letter]?.n >= rank))) {
             
             const currentLevel = userAccount.ficha1.talentos[letter]?.n ?? 0;
