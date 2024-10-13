@@ -18,7 +18,7 @@ export async function execute(interaction, userAccount, userDB, client) {
     await interaction.deferReply({ ephemeral: true });
 
     // Verifica se o usuário é Kage
-    if (userAccount.ficha1.title !== 'Kage') {
+    if (!userAccount.ficha1.kage) {
         return await interaction.editReply({ content: 'Somente o Kage pode designar o Sênior da vila.' });
     }
 

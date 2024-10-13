@@ -27,7 +27,6 @@ const patenteRoles = {
   5: "1164694297086541845"
 };
 
-// Adicione aqui os IDs dos cargos para cada país
 const countryRoles = {
   "País da Água": "1292190335052677212",
   "País do Relâmpago": "1292190366392389705",
@@ -43,135 +42,79 @@ const allManagedRoles = new Set([
   nukeninRole,
   ...Object.values(patenteRoles),
   ...Object.values(vipRoles),
-  ...Object.values(countryRoles)
+  ...Object.values(countryRoles),
+  ...Object.values(vilaRoles)
 ]);
 
 async function updateNicknamesAndRoles() {
   try {
     const guild = await client.guilds.fetch(guildId);
-    const cursor = await userDB.find({
+    const allMembers = await guild.members.fetch();
+    const dbUsers = await userDB.find({
       id_dc: { $exists: true },
       guild_join: true
-    }, { projection: { id_dc: 1, ficha1: 1, vip: 1 } });
+    }, { projection: { id_dc: 1, ficha1: 1, vip: 1 } }).toArray();
 
-    await cursor.forEach(async (user) => {
+    const dbUserIds = new Set(dbUsers.map(user => user.id_dc));
+
+    for (const [memberId, member] of allMembers) {
       try {
-        const member = await guild.members.fetch(user.id_dc);
+        const user = dbUsers.find(u => u.id_dc === memberId);
         let newNickname = null;
         const rolesToAdd = new Set();
-        const rolesToRemove = new Set();
+        const rolesToRemove = new Set(allManagedRoles);
 
-        if (user.ficha1 && user.ficha1.active) {
+        if (user && user.ficha1 && user.ficha1.active) {
           newNickname = user.ficha1.titleActive
             ? `[${user.ficha1.titleActive}] ${user.ficha1.name}`
             : `${user.ficha1.name}`;
 
-          // Verificar se o apelido já está correto
-          if (member.nickname !== newNickname && member.id !== "395675410765185026") {
-            try {
-              await member.setNickname(newNickname);
-            } catch (error) {
-              if (error.code !== 50013) { // Ignorar erro de permissão
-                console.error(`Erro ao atualizar o apelido de ${user?.ficha1?.name || user?.username} (${member.id}):`, error);
-              }
-            }
-          }
-
-          // Verificar cargo de VIP
+          // VIP role
           const vipRole = vipRoles[user.vip];
-          if (vipRole) {
-            if (!member.roles.cache.has(vipRole)) {
-              rolesToAdd.add(vipRole);
-            }
-            
-            Object.values(vipRoles).forEach(role => {
-              if (role !== vipRole && member.roles.cache.has(role)) {
-                rolesToRemove.add(role);
-              }
-            });
-          } else {
-            Object.values(vipRoles).forEach(role => {
-              if (member.roles.cache.has(role)) {
-                rolesToRemove.add(role);
-              }
-            });
-          }
+          if (vipRole) rolesToAdd.add(vipRole);
 
-          // Verificar cargos de patente e vila
+          // Patente and Vila roles
           const patenteRole = patenteRoles[user.ficha1.patenteNvl];
           const vilaRole = vilaRoles[user.ficha1.vila];
+          if (patenteRole) rolesToAdd.add(patenteRole);
+          if (vilaRole) rolesToAdd.add(vilaRole);
 
-          if (patenteRole && !member.roles.cache.has(patenteRole)) {
-            rolesToAdd.add(patenteRole);
-          }
+          // Shinobi/Nukenin roles
+          rolesToAdd.add(user.ficha1.patenteType === 0 ? shinobiRole : nukeninRole);
 
-          if (vilaRole && !member.roles.cache.has(vilaRole)) {
-            rolesToAdd.add(vilaRole);
-          }
-
-          // Definir cargos de Shinobi/Nukenin conforme a patente
-          if (user.ficha1.patenteType === 0) {
-            if (!member.roles.cache.has(shinobiRole)) {
-              rolesToAdd.add(shinobiRole);
-            }
-            rolesToRemove.add(nukeninRole);
-          } else {
-            if (!member.roles.cache.has(nukeninRole)) {
-              rolesToAdd.add(nukeninRole);
-            }
-            rolesToRemove.add(shinobiRole);
-          }
-
-          // Verificar e atualizar o cargo do país
+          // Country role
           const countryRole = countryRoles[user.ficha1.localCountry];
-          if (countryRole) {
-            if (!member.roles.cache.has(countryRole)) {
-              rolesToAdd.add(countryRole);
-            }
-            
-            Object.values(countryRoles).forEach(role => {
-              if (role !== countryRole && member.roles.cache.has(role)) {
-                rolesToRemove.add(role);
-              }
-            });
-          } else {
-            Object.values(countryRoles).forEach(role => {
-              if (member.roles.cache.has(role)) {
-                rolesToRemove.add(role);
-              }
-            });
-          }
+          if (countryRole) rolesToAdd.add(countryRole);
+
         } else {
-          // Remover cargos se a ficha1 não estiver ativa
-          rolesToRemove.add(shinobiRole);
-          rolesToRemove.add(nukeninRole);
-          Object.values(patenteRoles).forEach(role => rolesToRemove.add(role));
-          Object.values(vilaRoles).forEach(role => rolesToRemove.add(role));
-          Object.values(vipRoles).forEach(role => rolesToRemove.add(role));
-          Object.values(countryRoles).forEach(role => rolesToRemove.add(role));
+          newNickname = null; // Reset nickname if user not in DB or ficha not active
         }
 
-        // Filtrar roles a remover que o usuário realmente possui
-        const memberRolesToRemove = member.roles.cache.filter(role => allManagedRoles.has(role.id));
-        const rolesToRemoveArray = Array.from(rolesToRemove).filter(role => memberRolesToRemove.has(role));
-
-        // Filtrar roles a adicionar que o usuário ainda não possui
-        const rolesToAddArray = Array.from(rolesToAdd).filter(role => !member.roles.cache.has(role));
-
-        // Adicionar os novos cargos apenas se necessário
-        if (rolesToAddArray.length > 0) {
-          await member.roles.add(rolesToAddArray);
+        // Update nickname
+        if (member.nickname !== newNickname && member.id !== "395675410765185026") {
+          try {
+            await member.setNickname(newNickname);
+          } catch (error) {
+            if (error.code !== 50013) {
+              console.error(`Erro ao atualizar o apelido de ${member.user.username} (${member.id}):`, error);
+            }
+          }
         }
 
-        // Remover cargos obsoletos apenas se necessário
-        if (rolesToRemoveArray.length > 0) {
-          await member.roles.remove(rolesToRemoveArray);
-        }
+        // Remove roles that should not be added
+        rolesToAdd.forEach(role => rolesToRemove.delete(role));
+
+        // Filter roles to actually remove
+        const rolesToRemoveArray = Array.from(rolesToRemove).filter(role => member.roles.cache.has(role));
+
+        // Add and remove roles
+        if (rolesToAdd.size > 0) await member.roles.add(Array.from(rolesToAdd));
+        if (rolesToRemoveArray.length > 0) await member.roles.remove(rolesToRemoveArray);
 
       } catch (error) {
-        // Pode ignorar o erro por usuário se não conseguir buscar o membro
+        console.error(`Erro ao processar membro ${memberId}:`, error);
       }
-    });
+    }
   } catch (error) {
     console.error("Erro na verificação dos usuários:", error);
   }
