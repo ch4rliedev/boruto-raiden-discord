@@ -28,8 +28,6 @@ export async function execute(interaction, userAccount, userDB, infoGameDB, item
 
   if (userAccount.ficha1.state !== "Livre") return await interaction.editReply({ content: `Você está no evento **"${userAccount.ficha1.state}"**, aguarde a conclusão em **${userAccount.ficha1.tempo.finish.toLocaleString('pt-BR', { timeZone: 'America/Sao_Paulo' })}.**` });
 
-  if (userAccount.ficha1.trades.limit === 5) return await interaction.editReply({ content: `Você atingiu o limite mensal de 5 negociações, aguarde o próximo dia 1.` });
-
   const choice = interaction.options.getString('escolha')
   const slotNumber = interaction.options.getNumber('slot')
   const trade = userAccount.ficha1.trades[`trade${slotNumber}`];
@@ -38,9 +36,6 @@ export async function execute(interaction, userAccount, userDB, infoGameDB, item
     await interaction.editReply({ content: `Não há ofertas registradas para este trade.`});
     return;
   }
-
-  const targetAccount = await userDB.findOne({ "id_dc": trade.id_dc });
-  if (targetAccount.ficha1.trades.limit === 5) return await interaction.editReply({ content: `O jogador <@${targetAccount}> atingiu o limite mensal de negociações dele, aguardem o próximo dia 1.` });
 
   if (choice === "ac") {
     if (trade.custo > userAccount.ficha1.ryou) {
@@ -80,8 +75,7 @@ export async function execute(interaction, userAccount, userDB, infoGameDB, item
                 [`ficha1.inventario.slot${trade.slot}.quantia`]: 0
               },
               $inc: {
-                "ficha1.ryou": trade.custo,
-                'ficha1.trades.limit': 1,
+                "ficha1.ryou": trade.custo
               }
             });
           }
@@ -89,8 +83,7 @@ export async function execute(interaction, userAccount, userDB, infoGameDB, item
             await userDB.updateOne({ "id_dc": trade.id_dc }, {
               $inc: {
                 "ficha1.ryou": +trade.custo,
-                [`ficha1.inventario.slot${trade.slot}.quantia`]: -trade.quantia,
-                "ficha1.trades.limit": 1
+                [`ficha1.inventario.slot${trade.slot}.quantia`]: -trade.quantia
               }
             });
           }
@@ -98,8 +91,7 @@ export async function execute(interaction, userAccount, userDB, infoGameDB, item
           await userDB.updateOne({ "id_dc": interaction.user.id }, {
             $inc: {
               "ficha1.ryou": -trade.custo,
-              [`ficha1.inventario.${slotName}.quantia`]: +trade.quantia,
-              "ficha1.trades.limit": 1
+              [`ficha1.inventario.${slotName}.quantia`]: +trade.quantia
             },
             $set: {
               [`ficha1.trades.trade${slotNumber}.nomeItem`]: "Vazio",
@@ -137,8 +129,7 @@ export async function execute(interaction, userAccount, userDB, infoGameDB, item
                   [`ficha1.inventario.slot${trade.slot}.quantia`]: 0,
                 },
                 $inc: {
-                  "ficha1.ryou": trade.custo,
-                  "ficha1.trades.limit": 1,
+                  "ficha1.ryou": trade.custo
                 }
               });
             }
@@ -146,8 +137,7 @@ export async function execute(interaction, userAccount, userDB, infoGameDB, item
               await userDB.updateOne({ "id_dc": trade.id_dc }, {
                 $inc: {
                   "ficha1.ryou": +trade.custo,
-                  [`ficha1.inventario.slot${trade.slot}.quantia`]: -trade.quantia,
-                  "ficha1.trades.limit": 1,
+                  [`ficha1.inventario.slot${trade.slot}.quantia`]: -trade.quantia
                 }
               });
             }
@@ -155,8 +145,7 @@ export async function execute(interaction, userAccount, userDB, infoGameDB, item
             await userDB.updateOne({ "id_dc": interaction.user.id }, {
               $inc: {
                 "ficha1.ryou": -trade.custo,
-                [`ficha1.inventario.${slotName}.quantia`]: +trade.quantia,
-                "ficha1.trades.limit": 1,
+                [`ficha1.inventario.${slotName}.quantia`]: +trade.quantia
               },
               $set: {
                 [`ficha1.inventario.${slotName}.nome`]: trade.nomeItem,

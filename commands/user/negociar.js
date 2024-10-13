@@ -48,10 +48,6 @@ export async function execute(interaction, userAccount, userDB, infoGameDB, item
         await interaction.editReply({ content: `*${target}* não é um alvo válido ou ele não possuí um personagem.`, ephemeral: true });
         return;
     }
-    
-    if (userAccount.ficha1.trades.limit === 5) return await interaction.editReply({ content: `Você atingiu a cota de negociações por mês, aguarde o próximo dia 1.` });
-
-    if (targetAccount.ficha1.trades.limit === 5) return await interaction.editReply({ content: `O jogador ${target} atingiu o limite mensal de negociações dele, aguardem o próximo dia 1.` });
 
     if (target.id == interaction.user.id) {
         return await interaction.editReply({ content: `Você não pode negociar consigo mesmo.` });
@@ -107,7 +103,7 @@ export async function execute(interaction, userAccount, userDB, infoGameDB, item
     }
 
     let tradeVazio = false;
-    for (let i = 1; i <= 5; i++) {
+    for (let i = 1; i <= 10 ; i++) {
         const trade = targetAccount.ficha1.trades[`trade${i}`];
         if (trade.nomeItem === "Vazio") {
             await userDB.updateOne({ "id_dc": target.id }, {
