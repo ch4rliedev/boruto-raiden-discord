@@ -1,5 +1,4 @@
-import { SlashCommandBuilder } from 'discord.js';
-import { itemDB, jutsuDB, invDB } from '../../mongodb.js';	
+import { SlashCommandBuilder } from 'discord.js';	
 
 export const data = new SlashCommandBuilder()
     .setName('del_player')

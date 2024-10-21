@@ -1,5 +1,4 @@
 import { SlashCommandBuilder } from 'discord.js';
-import { itemDB } from '../../mongodb.js';
 
 export const data = new SlashCommandBuilder()
     .setName('desequipar')

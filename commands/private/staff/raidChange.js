@@ -1,6 +1,5 @@
 import { SlashCommandBuilder } from 'discord.js';
 import { randomInt } from 'crypto';
-import { clanDB } from '../../mongodb.js';
 
 export const data = new SlashCommandBuilder()
     .setName('raid_change')

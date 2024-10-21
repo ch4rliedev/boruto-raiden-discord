@@ -1,5 +1,4 @@
 import { SlashCommandBuilder } from 'discord.js';
-import { itemDB, jutsuDB, invDB } from '../../mongodb.js';
 
 export const data = new SlashCommandBuilder()
     .setName('give')
