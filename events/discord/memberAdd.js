@@ -2,55 +2,65 @@ import { Events } from 'discord.js';
 import { userDB } from '../../mongodb.js';
 
 export const name = Events.GuildMemberAdd;
+
 export async function execute(member) {
+    const serverId = member.guild.id;
+    let welcomeMessage;
+
+    // Definir a mensagem de boas-vindas com base no ID do servidor
+    if (serverId === '1164398692283990046') { //Boruto Raiden
+        welcomeMessage = `# Olá, <@${member.id}> <:naruto_joinha:1260398351413809185>
+## Seja bem vindo(a) ao RPG semi-automático textual **BORUTO RAIDEN**, a melhor comunidade do gênero de Naruto x Boruto.
+## Sou a Eida Ootsutsuki, a aplicação mestra no servidor!
+Acesse nosso site [clicando aqui](<https://borutoraiden.com/>) baixar o aplicativo oficial e conhecer mais do nosso projeto.
+
+**Instagram:** <https://www.instagram.com/borutoraiden.oficial>
+**YouTube:** <https://www.youtube.com/@borutoraiden.oficial>
+**X/Twitter:** <https://x.com/borutoraidenofc>
+**Facebook:** <https://www.facebook.com/borutoraiden.oficial>
+
+Confira nosso Guia para Iniciantes: <https://borutoraide.com/tutorials/guide>
+
+### Para quaisquer outras dúvidas, contate a <@&1164693494544224336> no canal <#1164563905557839944>. (Pode mencionar eles)`;
+    }
+
+    else if (serverId === '847874223900065869') { //Wiki Naruto
+        welcomeMessage = `# Olá, <@${member.id}>! Bem-vindo(a) ao servidor **XYZ**!
+Aqui você encontrará um espaço para discutir o universo **XYZ**.
+Não deixe de conferir nosso site [aqui](<https://xyz.com>) para mais informações.
+**Instagram:** <https://www.instagram.com/xyz.oficial>
+**Youtube:** <https://www.youtube.com/@xyz.oficial>
+**X/Twitter:** <https://x.com/xyzofc>
+**Facebook:** <https://www.facebook.com/xyz.oficial>`;
+    }
+
+    else { //Qualquer outro servidor
+        welcomeMessage = `# Olá, <@${member.id}>!
+Vi que você entrou no servidor **${member.guild.name}**. Acabei de verificar e ele não está na minha lista de servidores parceiros, mas fui adicionado aqui mesmo assim!
+
+Caso queira saber de onde eu vim, eu sou do RPG Boruto Raiden, a melhor comunidade do gênero de Naruto x Boruto.
+
+Se quiser saber mais sobre o projeto, acesse nosso site [clicando aqui](<https://borutoraiden.com/>) e baixe o aplicativo oficial ou acesse nosso servidor [clicando aqui](<https://discord.gg/2PRXvbxwjr>).`;
+    }
+
     try {
         // Tenta enviar a mensagem na DM do usuário
-        await member.send({
-            content: `# Olá, <@${member.id}> <:naruto_joinha:1260398351413809185>
-
-## Seja bem vindo(a) ao RPG semi-automático textual **Boruto Raiden**, a melhor comunidade RPG de Naruto x Boruto no Discord.
-## Sou a Eida Ootsutsuki, a coordenadora geral do BR no servidor!
-Acesse nosso site [clicando aqui](<https://borutoraiden.com/user/register>) para criar sua conta e logo em seguida seu personagem.
-Veja nosso instagram [clicando aqui](<https://www.instagram.com/borutoraiden.oficial/>) e nos siga para participar de sorteios e cupons de desconto na loja, assim como também nosso canal no YouTube [clicando aqui](<https://www.youtube.com/@borutoraiden.oficial>).
-
-Não esqueça de verificar nosso **Guia para Iniciantes** [clicando aqui](<https://borutoraiden.com/tutorials/guide>) para as principais perguntas já respondidas.
-### Vincule sua conta do Discord em nosso site para não ficar impedido de jogar.
-### Para quaisquer outras dúvidas, contate a <@&1164693494544224336> no canal <#1164563905557839944>. (Pode mencionar eles 😉)
-`,
-        });
-
-        // Atualiza a entrada do usuário no banco de dados
-        await userDB.updateOne({ "id_dc": member.id },
-        {
-            $set: {
-                "guild_join": true
-            }
-        });
-    } catch (err) {
+        await member.send({ content: welcomeMessage });
+    }
+    catch (err) {
         console.error(err);
         
         // Se não conseguir enviar a DM, manda a mensagem no canal com ID 1164407564096770048
         const channel = member.guild.channels.cache.get('1164407564096770048');
-        if (channel) {
+        if (channel && serverId === '1164398692283990046') {
             try {
-                await channel.send({
-                    content: `Olá, <@${member.id}>! <:naruto_joinha:1260398351413809185> 
-
-Infelizmente, não consegui te enviar a mensagem de boas-vindas diretamente na sua DM, então estou enviando por aqui no chat do servidor.
-
-## Seja bem-vindo(a) ao RPG semi-automático textual **Boruto Raiden**, a melhor comunidade RPG de Naruto x Boruto no Discord!
-Acesse nosso site [clicando aqui](<https://borutoraiden.com/user/register>) para criar sua conta e logo em seguida seu personagem.
-Veja nosso Instagram [clicando aqui](<https://www.instagram.com/borutoraiden.oficial/>) e nos siga para participar de sorteios e cupons de desconto na loja, assim como também nosso canal no YouTube [clicando aqui](<https://www.youtube.com/@borutoraiden.oficial>).
-
-Não se esqueça de verificar nosso **Guia para Iniciantes** [clicando aqui](<https://borutoraiden.com/tutorials/guide>) para as principais perguntas já respondidas.
-
-### Vincule sua conta do Discord em nosso site para não ficar impedido de jogar.
-### Para quaisquer outras dúvidas, contate a <@&1164693494544224336> no canal <#1164563905557839944>. (Pode mencionar eles 😉)
-`,
-                });
+                await channel.send({ content: `Olá, <@${member.id}>! Infelizmente, não consegui te enviar a mensagem de boas-vindas diretamente na sua DM, então estou enviando por aqui no chat do servidor. ${welcomeMessage}` });
             } catch (channelErr) {
                 console.error(`Falha ao enviar mensagem no canal: ${channelErr}`);
             }
         }
+    }
+    finally {
+        if (serverId === "1164398692283990046") await userDB.updateOne({ "id_dc": member.id }, { $set: { "guild_join": true } });
     }
 }
