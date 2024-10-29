@@ -24,14 +24,12 @@ Confira nosso Guia para Iniciantes: <https://borutoraide.com/tutorials/guide>
 ### Para quaisquer outras dúvidas, contate a <@&1164693494544224336> no canal <#1164563905557839944>. (Pode mencionar eles)`;
     }
 
-    else if (serverId === '847874223900065869') { //Wiki Naruto
-        welcomeMessage = `# Olá, <@${member.id}>! Bem-vindo(a) ao servidor **XYZ**!
-Aqui você encontrará um espaço para discutir o universo **XYZ**.
-Não deixe de conferir nosso site [aqui](<https://xyz.com>) para mais informações.
-**Instagram:** <https://www.instagram.com/xyz.oficial>
-**Youtube:** <https://www.youtube.com/@xyz.oficial>
-**X/Twitter:** <https://x.com/xyzofc>
-**Facebook:** <https://www.facebook.com/xyz.oficial>`;
+    else if (serverId === '847874223900065869') { //Wiki Naruto e outros
+        welcomeMessage = `# Olá, <@${member.id}>, bem-vindo(a) à **${member.guild.name}**!
+
+Sou a Eida Ootsutsuki, a aplicação mestra do Boruto Raiden, um MMORPG semi-automático textual de Naruto/Boruto e **parceira deste servidor!**
+
+Confira nosso site [aqui](<https://borutoraide.com>) para mais informações sobre o nosso jogo como download, ou se preferir um contato mais direto, acesse nosso servidor [clicando aqui](<https://discord.gg/2PRXvbxwjr>), te aguardamos! 🥰`;
     }
 
     else { //Qualquer outro servidor

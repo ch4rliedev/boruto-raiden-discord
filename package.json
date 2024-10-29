@@ -10,9 +10,9 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "cron": "3.1.7",
+    "cron": "3.1.8",
     "discord.js": "14.16.3",
-    "mongodb": "6.9.0",
+    "mongodb": "6.10.0",
     "node-fetch": "3.3.2"
   }
 }
